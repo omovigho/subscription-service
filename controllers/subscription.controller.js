@@ -1,3 +1,4 @@
+import { SERVER_URL } from '../config/env.js';
 import Subscription  from '../models/subscription.model.js';
 
 export const createSubscription = async (req, res, next) => {
@@ -7,10 +8,14 @@ export const createSubscription = async (req, res, next) => {
             user: req.user._id,
         });
 
+        await workflowClient.trigger({url, body, headers, workflowRunId, retries}:{
+            url: `${SERVER_URL}`
+        })
+
         res.status(201).json({
             success: true,
             message: 'Subscription created successfully',
-            data: subscription,
+            data: {subscription, workflowRunId}
         });
     } catch (error) {
         next(error);
